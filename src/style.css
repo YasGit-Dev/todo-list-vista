@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@theme {
+  --color-brand-red: #e04444;
+  --color-brand-yellow: #e8a83e;
+  --color-brand-pink: #f06b7a;
+  --color-brand-beige: #e8d0a0;
+  --color-brand-mauve: #b89090;
+  --color-brand-green: #4a9460;
+  --color-brand-gray: #585858;
+  --color-brand-cream: #f5f0e8;
+  --color-brand-bg: #3d3535;
+  --font-roboto: "roboto-flex";
+  --font-abhaya: "abhaya";
+  --font-actor: "actor";
+  --font-inter: "inter";
+  --font-island: "island";
+  --font-jost: "jost";
+
+}
+
+@font-face {
+  font-family: "roboto-flex";
+  src: url("./fonts/roboto-flex-latin-400-normal.woff") format("woff");
+}
+
+@font-face {
+  font-family: "abhaya";
+  src: url("./fonts/abhaya-libre-latin-800-normal.woff") format("woff");
+  src: url("fonts/abhaya-libre-sinhala-800-normal.woff") format("woff");
+}
+
+@font-face {
+  font-family: "actor";
+  src: url("./fonts/actor-latin-400-normal.woff") format("woff");
+}
+
+@font-face {
+  font-family: "inter";
+  src: url("./fonts/inter-cyrillic-600-italic.woff") format("woff");
+}
+
+
+@font-face {
+  font-family: "island";
+  src: url("./fonts/island-moments-latin-400-normal.woff") format("woff");
+}
+
+@font-face {
+  font-family: "jost";
+  src: url("./fonts/jost-latin-900-normal.woff") format("woff");
+}
+
