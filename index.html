@@ -7,10 +7,63 @@
   <script type="module" src="/src/main.js"></script>
   <title>todo-list</title>
 </head>
-<body class="bg-[#F2EAEA] min-h-screen">
+<body class="bg-[#F2EAEA] ">
+
+       <!-- TEMPLATE: task card -->
+  <template id="task-card-tpl">
+    <div class="bg-brand-beige rounded-xl p-4 flex flex-col gap-2">
+      <div class="flex justify-between items-start">
+        <p data-field="title" class="font-jost text-brand-bg text-base"></p>
+        <button data-action="toggle">
+          <i class="ti ti-circle text-brand-gray text-lg cursor-pointer"></i>
+        </button>
+      </div>
+      <p data-field="detail" class="font-actor text-brand-gray text-sm"></p>
+      <div class="flex items-center gap-2 flex-wrap mt-1">
+        <span data-field="priority" class="text-xs px-2 py-0.5 rounded-full font-actor" style="color:#3D3D3D"></span>
+        <span data-field="category" class="text-xs px-2 py-0.5 rounded-full bg-[#DBE2EF] font-actor text-brand-gray"></span>
+      </div>
+      <div class="flex justify-between items-center mt-1">
+        <p class="font-actor text-brand-gray text-xs">Start date : <span data-field="date" class="font-inter"></span></p>
+        <div class="flex gap-2">
+          <button data-action="edit"><i class="ti ti-edit text-brand-gray text-base cursor-pointer"></i></button>
+          <button data-action="delete"><i class="ti ti-trash text-brand-gray text-base cursor-pointer"></i></button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- =============================================
+       MODAL: ویرایش تسک
+       مخفیه — فقط وقتی edit بزنی باز میشه
+  ============================================== -->
+  <div id="edit-modal" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#F2EAEA] rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-jost text-brand-bg text-lg">ویرایش تسک</h2>
+        <button id="close-modal" class="text-brand-gray hover:text-brand-bg"><i class="ti ti-x text-xl"></i></button>
+      </div>
+      <div class="flex flex-col gap-3">
+        <input    id="m-title"    placeholder="عنوان"     class="bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm outline-none font-actor text-brand-gray">
+        <textarea id="m-detail"   placeholder="توضیحات" rows="3" class="bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm outline-none font-actor text-brand-gray resize-none"></textarea>
+        <input    id="m-category" placeholder="دسته‌بندی" class="bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm outline-none font-actor text-brand-gray">
+        <input    id="m-date"     type="date"              class="bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm outline-none font-actor text-brand-gray">
+        <select   id="m-priority"                          class="bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm outline-none font-actor text-brand-gray">
+          <option value="low">اولویت پایین</option>
+          <option value="medium">اولویت متوسط</option>
+          <option value="high">اولویت بالا</option>
+        </select>
+        <select   id="m-status"                            class="bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm outline-none font-actor text-brand-gray">
+          <option value="pending">در انتظار</option>
+          <option value="done">انجام‌شده</option>
+        </select>
+        <button id="save-task" class="bg-brand-green text-white rounded-lg py-2 font-actor text-sm hover:opacity-90 transition-opacity">ذخیره تغییرات</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Header -->
-  <div id="header" class="w-screen h-12 bg-[#F2EAEA] shadow-xl/10 flex justify-between items-center 2xl:h-20">
+  <div id="header" class="w-full h-12 bg-[#F2EAEA] shadow-xl/10 flex justify-between items-center 2xl:h-20">
     <img src="/src/img/logo.svg" alt="icon" class="p-3 h-12 xl:h-24">
     <img src="/src/img/userIcon.jpg" alt="icon" class="p-3 h-12 w-12 xl:h-24 xl:w-24 xl:p-6 rounded-full object-cover">
   </div>
@@ -42,17 +95,16 @@
               class="flex-1 bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm text-brand-gray outline-none placeholder:text-brand-gray/60 font-actor">
           </div>
 
-          <button id="add-item"
-            class="w-12 h-10 rounded-lg bg-brand-green flex items-center justify-center shrink-0">
+          <button id="add-item" class="w-12 h-10 rounded-lg bg-brand-green flex items-center justify-center shrink-0">
             <i class="ti ti-plus text-white text-xl"></i>
           </button>
         </div>
 
         <!-- inputها موبایل: زیر Sunday -->
         <div class="flex flex-col gap-2 mt-3 md:hidden">
-          <input placeholder="Type Title Of Task"
+          <input id="title-task-mobile" placeholder="Type Title Of Task"
             class="w-full bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm text-brand-gray outline-none placeholder:text-brand-gray/60 font-actor">
-          <input placeholder="Detail Of Your Task"
+          <input id="detail-task-mobile" placeholder="Detail Of Your Task"
             class="w-full bg-[#DBE2EF] rounded-lg px-3 py-2 text-sm text-brand-gray outline-none placeholder:text-brand-gray/60 font-actor">
         </div>
 
@@ -61,96 +113,49 @@
       <!-- Main grid: calendar + tasks -->
       <div class="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4">
 
-        <!-- Calendar: موبایل مخفی -->
-        <div id="calendar-wrapper" class="w-full hidden md:block">
-          <div id="myCalendar"></div>
-        </div>
+        <!-- Calendar -->
+        <div id="calendar-wrapper" class="w-full hidden md:block"></div>
 
         <!-- Tasks section -->
         <div>
 
           <!-- Filters -->
           <div class="flex flex-wrap gap-2 mb-4">
-            <select class="bg-brand-beige text-brand-gray text-sm rounded-lg px-3 py-1.5 font-actor outline-none cursor-pointer">
-              <option>By category</option>
+            <select id="filter-category" class="bg-brand-beige text-brand-gray text-sm rounded-lg px-3 py-1.5 font-actor outline-none cursor-pointer">
+              <option value="">By category</option>
+              <option value="General">General</option>
+              <option value="Study">Study</option>
+              <option value="Work">Work</option>
+              <option value="Health">Health</option>
+              <option value="Project">Project</option>
             </select>
-            <select class="bg-brand-beige text-brand-gray text-sm rounded-lg px-3 py-1.5 font-actor outline-none cursor-pointer">
-              <option>By priority</option>
+            <select id="filter-priority" class="bg-brand-beige text-brand-gray text-sm rounded-lg px-3 py-1.5 font-actor outline-none cursor-pointer">
+              <option value="">By priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
             </select>
+            <div class="flex gap-1">
+              <button data-s="" class="status-btn px-3 py-1 rounded-lg text-xs font-actor bg-brand-beige text-brand-bg border border-brand-bg">همه</button>
+              <button data-s="pending" class="status-btn px-3 py-1 rounded-lg text-xs font-actor bg-brand-beige text-brand-gray">انتظار</button>
+              <button data-s="done" class="status-btn px-3 py-1 rounded-lg text-xs font-actor bg-brand-beige text-brand-gray">انجام‌شده</button>
+            </div>
             <div class="ml-auto flex items-center gap-2 bg-brand-beige rounded-lg px-3 py-1.5">
-              <input placeholder="Search by name" class="bg-transparent text-sm text-brand-gray outline-none placeholder:text-brand-gray/60 font-actor w-28">
+              <input id="search-task" placeholder="Search by name"
+                class="bg-transparent text-sm text-brand-gray outline-none placeholder:text-brand-gray/60 font-actor w-28">
               <i class="ti ti-search text-brand-gray text-sm"></i>
             </div>
+            <button id="clear-date" class="hidden px-3 py-1 rounded-lg text-xs font-actor bg-brand-mauve text-white">
+              × پاک کردن فیلتر تاریخ
+            </button>
           </div>
 
-          <!-- Task cards: موبایل 1 ستون، دسکتاپ 2 ستون -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="task-list">
-
-            <div class="bg-brand-beige rounded-xl p-4 flex flex-col gap-2">
-              <div class="flex justify-between items-start">
-                <p class="font-jost text-brand-bg text-base">Learn Javascipt</p>
-                <i class="ti ti-circle-check text-brand-gray text-lg cursor-pointer"></i>
-              </div>
-              <p class="font-actor text-brand-gray text-sm">Master the language powering the modern web.</p>
-              <div class="flex justify-between items-center mt-1">
-                <p class="font-actor text-brand-gray text-xs">Start date : <span class="font-inter">07-07-2023</span></p>
-                <div class="flex gap-2">
-                  <i class="ti ti-edit text-brand-gray text-base cursor-pointer"></i>
-                  <i class="ti ti-trash text-brand-gray text-base cursor-pointer"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-brand-beige rounded-xl p-4 flex flex-col gap-2">
-              <div class="flex justify-between items-start">
-                <p class="font-jost text-brand-bg text-base">Learn Javascipt</p>
-                <i class="ti ti-circle-check text-brand-gray text-lg cursor-pointer"></i>
-              </div>
-              <p class="font-actor text-brand-gray text-sm">Master the language powering the modern web.</p>
-              <div class="flex justify-between items-center mt-1">
-                <p class="font-actor text-brand-gray text-xs">Start date : <span class="font-inter">07-07-2023</span></p>
-                <div class="flex gap-2">
-                  <i class="ti ti-edit text-brand-gray text-base cursor-pointer"></i>
-                  <i class="ti ti-trash text-brand-gray text-base cursor-pointer"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-brand-beige rounded-xl p-4 flex flex-col gap-2">
-              <div class="flex justify-between items-start">
-                <p class="font-jost text-brand-bg text-base">Learn Javascipt</p>
-                <i class="ti ti-circle-check text-brand-gray text-lg cursor-pointer"></i>
-              </div>
-              <p class="font-actor text-brand-gray text-sm">Master the language powering the modern web.</p>
-              <div class="flex justify-between items-center mt-1">
-                <p class="font-actor text-brand-gray text-xs">Start date : <span class="font-inter">07-07-2023</span></p>
-                <div class="flex gap-2">
-                  <i class="ti ti-edit text-brand-gray text-base cursor-pointer"></i>
-                  <i class="ti ti-trash text-brand-gray text-base cursor-pointer"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-brand-beige rounded-xl p-4 flex flex-col gap-2">
-              <div class="flex justify-between items-start">
-                <p class="font-jost text-brand-bg text-base">Learn Javascipt</p>
-                <i class="ti ti-circle-check text-brand-gray text-lg cursor-pointer"></i>
-              </div>
-              <p class="font-actor text-brand-gray text-sm">Master the language powering the modern web.</p>
-              <div class="flex justify-between items-center mt-1">
-                <p class="font-actor text-brand-gray text-xs">Start date : <span class="font-inter">07-07-2023</span></p>
-                <div class="flex gap-2">
-                  <i class="ti ti-edit text-brand-gray text-base cursor-pointer"></i>
-                  <i class="ti ti-trash text-brand-gray text-base cursor-pointer"></i>
-                </div>
-              </div>
-            </div>
-
-          </div>
+          <!-- Task cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="task-list"></div>
 
           <!-- Load more -->
           <div class="flex justify-center mt-4">
-            <button class="border border-brand-bg text-brand-bg font-actor px-8 py-2 rounded-lg text-sm hover:bg-brand-bg hover:text-brand-cream transition-colors">
+            <button id="load-more" class="hidden border border-brand-bg text-brand-bg font-actor px-8 py-2 rounded-lg text-sm hover:bg-brand-bg hover:text-brand-cream transition-colors">
               Load more
             </button>
           </div>
@@ -158,36 +163,39 @@
         </div>
       </div>
 
-     <!-- Bottom stats -->
-<div class="flex flex-col md:flex-row gap-3 mt-6">
+      <!-- Bottom stats -->
+      <div class="flex flex-col md:flex-row gap-3 mt-6">
 
-  <div class="bg-brand-beige rounded-xl p-4 text-center md:w-[25%]">
-    <p class="font-jost text-brand-bg text-xs tracking-widest">COMPLETED TASKS</p>
-    <p class="font-jost text-brand-bg text-4xl mt-1">04</p>
-  </div>
+        <div class="bg-brand-beige rounded-xl p-4 text-center md:w-[25%]">
+          <p class="font-jost text-brand-bg text-xs tracking-widest">COMPLETED TASKS</p>
+          <p id="stat-completed" class="font-jost text-brand-bg text-4xl mt-1">00</p>
+        </div>
 
-  <div class="bg-brand-mauve rounded-xl p-4 text-center md:w-[25%]">
-    <p class="font-jost text-white text-xs tracking-widest">PENDING TASKS</p>
-    <p class="font-jost text-white text-4xl mt-1">15</p>
-  </div>
+        <div class="bg-brand-mauve rounded-xl p-4 text-center md:w-[25%]">
+          <p class="font-jost text-white text-xs tracking-widest">PENDING TASKS</p>
+          <p id="stat-pending" class="font-jost text-white text-4xl mt-1">00</p>
+        </div>
 
-  <div class="bg-white rounded-xl p-4 md:w-[50%] flex flex-row items-center justify-between gap-4">
-    <div>
-      <p class="font-actor text-brand-green text-sm">Tasks created</p>
-      <p class="font-jost text-brand-bg text-4xl">1,500</p>
-    </div>
-    <div class="flex flex-col items-center gap-2">
-      <p class="font-actor text-brand-gray text-sm"><span class="font-jost text-brand-bg">25k+</span> Active Users</p>
-      <div class="flex -space-x-3">
-        <img src="https://i.pravatar.cc/40?img=1" class="w-9 h-9 rounded-full border-2 border-white object-cover">
-        <img src="https://i.pravatar.cc/40?img=2" class="w-9 h-9 rounded-full border-2 border-white object-cover">
-        <img src="https://i.pravatar.cc/40?img=3" class="w-9 h-9 rounded-full border-2 border-white object-cover">
-        <img src="https://i.pravatar.cc/40?img=4" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+        <div class="bg-white rounded-xl p-4 md:w-[50%] flex flex-row items-center justify-between gap-4">
+          <div>
+            <p class="font-actor text-brand-green text-sm">Tasks created</p>
+            <p id="stat-total" class="font-jost text-brand-bg text-4xl">1,500</p>
+          </div>
+          <div class="flex flex-col items-center gap-2">
+            <p class="font-actor text-brand-gray text-sm"><span class="font-jost text-brand-bg">25k+</span> Active Users</p>
+            <div class="flex -space-x-3">
+              <img src="https://i.pravatar.cc/40?img=1" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+              <img src="https://i.pravatar.cc/40?img=2" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+              <img src="https://i.pravatar.cc/40?img=3" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+              <img src="https://i.pravatar.cc/40?img=4" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+            </div>
+          </div>
+        </div>
+
       </div>
+
     </div>
   </div>
-
-</div>
 
 </body>
 </html>

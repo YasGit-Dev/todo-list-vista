@@ -56,10 +56,15 @@
   animation: fpFadeIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── Inline: پر کردن کل عرض wrapper ── */
 .flatpickr-calendar.inline {
   display: block;
   position: relative;
   top: 2px;
+  width: 100% !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 .flatpickr-calendar.static {
@@ -73,10 +78,7 @@
 }
 
 .flatpickr-calendar:before,
-.flatpickr-calendar:after {
-  display: none;
-}
-
+.flatpickr-calendar:after { display: none; }
 .flatpickr-calendar:focus { outline: 0; }
 
 /* ── Months header ── */
@@ -86,6 +88,7 @@
   padding: 0 0 12px 0;
   border-bottom: 1px solid var(--fp-border);
   margin-bottom: 10px;
+  position: relative;
 }
 
 .flatpickr-months .flatpickr-month {
@@ -106,13 +109,14 @@
   user-select: none;
   text-decoration: none;
   cursor: pointer;
-  position: absolute;
-  top: 0;
+  /* ✅ static به جای absolute تا داخل کادر بمونه */
+  position: static;
   height: 32px;
   width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   z-index: 3;
   color: var(--fp-text-muted);
   fill: var(--fp-text-muted);
@@ -129,9 +133,6 @@
   color: var(--fp-accent);
   fill: var(--fp-accent);
 }
-
-.flatpickr-months .flatpickr-prev-month.flatpickr-prev-month { left: 0; }
-.flatpickr-months .flatpickr-next-month.flatpickr-next-month { right: 0; }
 
 .flatpickr-months .flatpickr-prev-month svg,
 .flatpickr-months .flatpickr-next-month svg {
@@ -150,15 +151,17 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--fp-text);
-  position: absolute;
-  width: 75%;
-  left: 12.5%;
+  position: static;
+  width: auto;
+  left: auto;
   padding: 0;
   height: 36px;
   line-height: 36px;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
   text-align: center;
-  transform: translate3d(0, 0, 0);
 }
 
 .flatpickr-current-month span.cur-month {
@@ -169,9 +172,7 @@
   letter-spacing: 0.3px;
 }
 
-.flatpickr-current-month span.cur-month:hover {
-  background: transparent;
-}
+.flatpickr-current-month span.cur-month:hover { background: transparent; }
 
 .flatpickr-current-month .numInputWrapper {
   width: 6ch;
@@ -219,9 +220,7 @@
   width: auto;
 }
 
-.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
-  background: var(--fp-hover);
-}
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover { background: var(--fp-hover); }
 
 /* ── Weekdays ── */
 .flatpickr-weekdays {
@@ -257,8 +256,13 @@ span.flatpickr-weekday {
 
 /* ── Days ── */
 .dayContainer,
-.flatpickr-weeks {
-  padding: 1px 0 0 0;
+.flatpickr-weeks { padding: 1px 0 0 0; }
+
+/* ✅ عرض 100% برای inline */
+.flatpickr-calendar.inline .flatpickr-days,
+.flatpickr-calendar.inline .flatpickr-rContainer,
+.flatpickr-calendar.inline .flatpickr-innerContainer {
+  width: 100% !important;
 }
 
 .flatpickr-days {
@@ -270,6 +274,12 @@ span.flatpickr-weekday {
 }
 
 .flatpickr-days:focus { outline: 0; }
+
+.flatpickr-calendar.inline .dayContainer {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+}
 
 .dayContainer {
   padding: 0;
@@ -287,9 +297,7 @@ span.flatpickr-weekday {
   gap: 2px;
 }
 
-.dayContainer + .dayContainer {
-  box-shadow: -1px 0 0 var(--fp-border);
-}
+.dayContainer + .dayContainer { box-shadow: -1px 0 0 var(--fp-border); }
 
 .flatpickr-day {
   background: none;
@@ -311,6 +319,11 @@ span.flatpickr-weekday {
   justify-content: center;
   text-align: center;
   transition: all 0.15s ease;
+}
+
+/* inline: روزها پر عرض باشن */
+.flatpickr-calendar.inline .flatpickr-day {
+  max-width: none !important;
 }
 
 .flatpickr-day.inRange,
@@ -371,33 +384,21 @@ span.flatpickr-weekday {
 
 .flatpickr-day.selected.startRange,
 .flatpickr-day.startRange.startRange,
-.flatpickr-day.endRange.startRange {
-  border-radius: 10px 4px 4px 10px;
-}
+.flatpickr-day.endRange.startRange { border-radius: 10px 4px 4px 10px; }
 
 .flatpickr-day.selected.endRange,
 .flatpickr-day.startRange.endRange,
-.flatpickr-day.endRange.endRange {
-  border-radius: 4px 10px 10px 4px;
-}
+.flatpickr-day.endRange.endRange { border-radius: 4px 10px 10px 4px; }
 
 .flatpickr-day.selected.startRange.endRange,
 .flatpickr-day.startRange.startRange.endRange,
-.flatpickr-day.endRange.startRange.endRange {
-  border-radius: 10px;
-}
+.flatpickr-day.endRange.startRange.endRange { border-radius: 10px; }
 
 .flatpickr-day.inRange {
   border-radius: 0;
   background: var(--fp-range);
   border-color: transparent;
   box-shadow: -5px 0 0 var(--fp-range), 5px 0 0 var(--fp-range);
-}
-
-.flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n+1)),
-.flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n+1)),
-.flatpickr-day.endRange.startRange + .endRange:not(:nth-child(7n+1)) {
-  box-shadow: -10px 0 0 var(--fp-selected-bg);
 }
 
 .flatpickr-day.flatpickr-disabled,
@@ -426,150 +427,17 @@ span.flatpickr-weekday {
 
 .flatpickr-day.hidden { visibility: hidden; }
 
-/* ── Time picker ── */
-.flatpickr-calendar.hasTime .flatpickr-time {
-  height: 48px;
-  border-top: 1px solid var(--fp-border);
-  margin-top: 12px;
+/* ── has-task marker ── */
+.flatpickr-day.has-task {
+  border-bottom: 2px solid var(--fp-accent);
+  font-weight: bold;
 }
-
-.flatpickr-time {
-  text-align: center;
-  outline: 0;
-  display: flex;
-  height: 0;
-  line-height: 48px;
-  max-height: 48px;
-  box-sizing: border-box;
-  overflow: hidden;
-  background: var(--fp-surface);
-  border-radius: 10px;
+.flatpickr-day.has-task.selected {
+  border-bottom: 2px solid rgba(255,255,255,0.6);
 }
-
-.flatpickr-time .numInputWrapper {
-  flex: 1;
-  width: 40%;
-  height: 48px;
-  float: left;
-}
-
-.flatpickr-time input {
-  background: transparent;
-  box-shadow: none;
-  border: 0;
-  border-radius: 0;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  height: inherit;
-  line-height: inherit;
-  color: var(--fp-text);
-  font-size: 15px;
-  font-weight: 600;
-  position: relative;
-  box-sizing: border-box;
-  appearance: textfield;
-}
-
-.flatpickr-time input.flatpickr-hour { font-weight: 700; }
-.flatpickr-time input.flatpickr-minute,
-.flatpickr-time input.flatpickr-second { font-weight: 400; }
-.flatpickr-time input:focus { outline: 0; border: 0; }
-
-.flatpickr-time .flatpickr-time-separator,
-.flatpickr-time .flatpickr-am-pm {
-  height: inherit;
-  float: left;
-  line-height: inherit;
-  color: var(--fp-accent);
-  font-weight: 700;
-  width: 2%;
-  user-select: none;
-  align-self: center;
-}
-
-.flatpickr-time .flatpickr-am-pm {
-  outline: 0;
-  width: 18%;
-  cursor: pointer;
-  text-align: center;
-  font-weight: 600;
-  color: var(--fp-text-muted);
-  transition: color 0.2s;
-}
-
-.flatpickr-time input:hover,
-.flatpickr-time .flatpickr-am-pm:hover,
-.flatpickr-time input:focus,
-.flatpickr-time .flatpickr-am-pm:focus {
-  background: var(--fp-hover);
-  color: var(--fp-accent);
-}
-
-/* ── NumInput wrapper ── */
-.numInputWrapper {
-  position: relative;
-  height: auto;
-}
-
-.numInputWrapper input,
-.numInputWrapper span { display: inline-block; }
-.numInputWrapper input { width: 100%; }
-.numInputWrapper input::-ms-clear { display: none; }
-.numInputWrapper input::-webkit-outer-spin-button,
-.numInputWrapper input::-webkit-inner-spin-button {
-  margin: 0;
-  -webkit-appearance: none;
-}
-
-.numInputWrapper span {
-  position: absolute;
-  right: 0;
-  width: 14px;
-  padding: 0 4px 0 2px;
-  height: 50%;
-  line-height: 50%;
-  opacity: 0;
-  cursor: pointer;
-  border: 1px solid var(--fp-border);
-  box-sizing: border-box;
-  transition: opacity 0.2s;
-}
-
-.numInputWrapper span:hover { background: var(--fp-hover); }
-.numInputWrapper span:active { background: var(--fp-accent-hover); }
-
-.numInputWrapper span:after {
-  display: block;
-  content: "";
-  position: absolute;
-}
-
-.numInputWrapper span.arrowUp { top: 0; border-bottom: 0; }
-.numInputWrapper span.arrowUp:after {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 4px solid var(--fp-text-muted);
-  top: 26%;
-}
-.numInputWrapper span.arrowDown { top: 50%; }
-.numInputWrapper span.arrowDown:after {
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid var(--fp-text-muted);
-  top: 40%;
-}
-
-.numInputWrapper span svg { width: inherit; height: auto; }
-.numInputWrapper span svg path { fill: var(--fp-text-muted); }
-.numInputWrapper:hover { background: rgba(240, 107, 122, 0.05); }
-.numInputWrapper:hover span { opacity: 1; }
 
 /* ── Misc ── */
-.flatpickr-wrapper {
-  position: relative;
-  display: inline-block;
-}
+.flatpickr-wrapper { position: relative; display: inline-block; }
 
 .flatpickr-innerContainer {
   display: flex;
@@ -611,28 +479,63 @@ span.flatpickr-weekday {
 .flatpickr-input[readonly] { cursor: pointer; }
 .rangeMode .flatpickr-day { margin-top: 1px; }
 
-/* ── Input ── */
-.flatpickr-input {
-  background: var(--fp-surface);
-  border: 1px solid var(--fp-border);
-  border-radius: 10px;
-  color: var(--fp-text);
-  font-size: 14px;
-  padding: 10px 14px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.flatpickr-input:focus {
-  border-color: var(--fp-accent);
-  box-shadow: 0 0 0 3px rgba(240, 107, 122, 0.15);
-}
-
 /* مخفی کردن input فقط در بخش تقویم inline */
-#calendar-wrapper .flatpickr-input {
-  display: none;
+#calendar-wrapper .flatpickr-input { display: none; }
+
+/* ── آیکون کم/زیاد سال ── */
+.numInputWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.numInputWrapper span {
+  position: absolute;
+  right: -20px;
+  width: 12px;
+  height: 50%;
+  line-height: 50%;
+  opacity: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+  border: 1px solid var(--fp-border);
+}
+
+.numInputWrapper span:after {
+  display: block;
+  content: "";
+  position: absolute;
+}
+
+.numInputWrapper span.arrowUp {
+  top: 0;
+  border-bottom: 0;
+}
+.numInputWrapper span.arrowUp:after {
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid var(--fp-text-muted);
+  top: 30%;
+  left: 2px;
+}
+
+.numInputWrapper span.arrowDown {
+  top: 50%;
+}
+.numInputWrapper span.arrowDown:after {
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 3px solid var(--fp-text-muted);
+  top: 35%;
+  left: 2px;
+}
+
+.numInputWrapper span:hover {
+  background: var(--fp-hover);
+}
+
+.flatpickr-current-month .numInputWrapper {
+  width: 4ch;
+  margin-left: 4px;
 }
 
 /* ── Animation ── */
